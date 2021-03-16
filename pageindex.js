@@ -5,31 +5,26 @@
 	"use strict"
 
 	var PageIndex = {
-		limit: 20,			// 展示页面条目数(默认20)
-		all: 0,				// 所查询的总条目数
-		pageNum: 0,			// 当前分页页数(根据总条目数算出)
-		showPageSize: 10,   // 索引条显示长度
-		_showPageSizeLimit: 10, // 最大显示长度
-		curp: 0,			// 当前指向的索引
-		queryFunc: null,	// 每次点击之后的查询函数
-		indexes:  [],		// 索引节点
-		node: null,			// 对应的node
+		limit: 20,
+		all: 0,
+		pageNum: 0,
+		showPageSize: 10,
+		_showPageSizeLimit: 10,
+		curp: 0,
+		queryFunc: null,
+		indexes:  [],
+		node: null,
 
-		_color: "white",		// 选中框字体颜色
-		_bgColor: "lightblue",	// 选中框背景颜色
+		_color: "white",
+		_bgColor: "lightblue",
 
 		// 生成一个分页索引对象
-		// len: 总数据长度
-		// limit: 每页数据条目数
-		// bindID: 要绑定到的节点
-		// queryFunc: 点击索引会调用的查询函数
 		New: function(len, limit, bindID, queryFunc) {
 			if (!len || !limit || !bindID) return;
 			if (!queryFunc || typeof queryFunc != "function") return;
 			if (!bindID.startsWith("#")) {bindID = "#" + bindID;}
 
 			let _this = Object.assign({}, PageIndex);
-			// !!! indexes引用问题,这里清理(保证当前页面不会出现其他索引)
 			if (_this.indexes.length > 0) _this.indexes = [];
 			_this.queryFunc = queryFunc;
 			_this.all = len;
@@ -42,10 +37,12 @@
 			let node = document.createElement("ul");
 			node.classList.add("pagination");
 			node.classList.add("justify-content-center");
+
 			// left
 			let left = _this._createIndex("&laquo;");
 			left.onclick = (e) => {_this._previous();};
 			node.appendChild(left);
+
 			// mid (先将所有节点创建出来)
 			for (let i=0; i<_this.pageNum; i++) {
 				let index = _this._createIndex(i+1);
@@ -53,17 +50,19 @@
 				node.appendChild(index);
 				_this.indexes.push(index);
 			}
+
 			// right
 			let right = _this._createIndex("&raquo;");
 			right.onclick = (e) => {_this._next();};
 			node.appendChild(right);
-			// 绑定到父节点
+
+			// bind
 			let parentNode = document.querySelector(bindID);
 			if (parentNode) {
 				parentNode.innerHTML = "";
 				parentNode.appendChild(node);
 			}
-			// 正确显示索引
+
 			_this._setFlag();
 
 			return _this;
